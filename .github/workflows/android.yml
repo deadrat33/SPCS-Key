@@ -1,8 +1,42 @@
-name: Test
-on: [push]
+name: Android APK Build
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Hello World
-        run: echo "Hello from GitHub Actions!"
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip build-essential git openjdk-8-jdk unzip zlib1g-dev
+        pip install buildozer
+
+    - name: Build APK
+      run: |
+        buildozer android debug
+
+    - name: Move APK to repo folder
+      run: |
+        mkdir -p release
+        cp bin/*.apk release/
+
+    - name: Commit APK to repo
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git add release/*.apk
+        git commit -m "Add built APK [skip ci]" || echo "No changes to commit"
+        git push
