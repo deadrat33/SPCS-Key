@@ -26,22 +26,20 @@ jobs:
 
     - name: Install Android SDK & Accept Licenses
       run: |
-        rm -rf $HOME/android-sdk  # <--- CLEAN any existing SDK directory
-        mkdir -p $HOME/android-sdk
-        cd $HOME/android-sdk
+        rm -rf $HOME/android-sdk
+        mkdir -p $HOME/android-sdk/cmdline-tools/latest
+        cd $HOME/android-sdk/cmdline-tools/latest
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
         unzip cmdline-tools.zip
-        mkdir cmdline-tools
-        mv cmdline-tools/* cmdline-tools/
         export ANDROID_SDK_ROOT=$HOME/android-sdk
-        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
-        yes | $ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager --licenses
-        $ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3"
+        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+        yes | sdkmanager --licenses
+        sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3"
 
     - name: Build APK
       run: |
         export ANDROID_SDK_ROOT=$HOME/android-sdk
-        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+        export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
         buildozer android debug
 
     - name: Move APK to repo folder
