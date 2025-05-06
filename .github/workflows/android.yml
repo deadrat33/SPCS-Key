@@ -29,7 +29,7 @@ jobs:
         buildozer android debug
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@8e31e6655e6fb5cf8b37bda5a9674d9894971e54
       with:
         name: TexasSPCSChecker-APK
         path: bin/*.apk
