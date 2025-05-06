@@ -26,6 +26,7 @@ jobs:
 
     - name: Install Android SDK & Accept Licenses
       run: |
+        rm -rf $HOME/android-sdk  # <--- CLEAN any existing SDK directory
         mkdir -p $HOME/android-sdk
         cd $HOME/android-sdk
         wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
