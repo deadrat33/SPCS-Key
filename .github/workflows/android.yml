@@ -39,8 +39,8 @@ jobs:
       - name: Build APK
         run: |
           export ANDROID_SDK_ROOT=$HOME/android-sdk
-          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
-          buildozer android debug
+        run: |
+    ls -lh bin || echo "bin folder not found"buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v3.1.2
