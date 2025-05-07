@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     container:
       image: sampingan/android:latest
 
@@ -30,8 +29,13 @@ jobs:
         run: |
           buildozer android debug
 
-      - name: Upload APK
+      - name: Move APK for upload
+        run: |
+          mkdir -p /tmp/artifacts
+          cp bin/*.apk /tmp/artifacts/
+
+      - name: Upload APK (host step)
         uses: actions/upload-artifact@v3
         with:
           name: app-release-apk
-          path: bin/*.apk
+          path: /tmp/artifacts/*.apk
