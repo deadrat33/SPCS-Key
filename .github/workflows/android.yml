@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: sampingan/android:latest
 
     steps:
       - name: Checkout repository
@@ -20,22 +18,32 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Install dependencies
+      - name: Install Android SDK
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-8-jdk wget unzip git
+          wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d cmdline-tools
+          mkdir -p $HOME/android-sdk/cmdline-tools/latest
+          mv cmdline-tools/* $HOME/android-sdk/cmdline-tools/latest/
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.3"
+
+      - name: Install Python build dependencies
         run: |
           pip install --upgrade pip
           pip install buildozer cython
 
       - name: Build APK
         run: |
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
           buildozer android debug
 
-      - name: Move APK for upload
-        run: |
-          mkdir -p /tmp/artifacts
-          cp bin/*.apk /tmp/artifacts/
-
-      - name: Upload APK (host step)
+      - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: app-release-apk
-          path: /tmp/artifacts/*.apk
+          path: bin/*.apk
